@@ -1,0 +1,21 @@
+.metaContainer {
+  margin-top: 10px;
+  font-size: max(0.6vw, 10px);
+  &>div {
+    margin-top: 10px;
+  }
+  & ion-icon {
+   margin-right: 10px;
+  }
+}
+.zip {
+  margin-left: 25px;
+}
+.lineWithIcon {
+  display: flex;
+  align-items: center;
+  &.email:hover {
+    color: #2196f3;
+    scale: 1.02;
+  }
+}
