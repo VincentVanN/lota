@@ -4,7 +4,7 @@ import MetaContainer from '../MetaContainer/MetaContainer';
 import './card.scss';
 
 function Card({
-  user, setUserToDisplay, setIsMaps, index, userToDisplay,
+  user, setUserToDisplay, setIsMaps, index, userToDisplay, setChecked,
 }) {
   const handleOpen = () => {
     setUserToDisplay(user);
@@ -13,6 +13,7 @@ function Card({
   const handleClose = () => {
     setUserToDisplay(null);
     setIsMaps(false);
+    setChecked(false);
   };
   const onEmailClick = () => {
     window.open(`mailto:${user.email}`);
@@ -94,5 +95,6 @@ Card.propTypes = {
   setIsMaps: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   userToDisplay: PropTypes.object,
+  setChecked: PropTypes.func.isRequired,
 };
 export default Card;

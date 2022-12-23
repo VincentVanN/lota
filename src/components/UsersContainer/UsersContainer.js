@@ -153,16 +153,17 @@ function UsersContainer({
             exit={{ x: -500 }}
             key="cardContainer"
           >
-            {usersToDisplay.map((user, index) => (
-              <Card
-                user={user}
-                key={user.name}
-                setUserToDisplay={setUserToDisplay}
-                setIsMaps={setIsMaps}
-                index={index}
-                userToDisplay={userToDisplay}
-              />
-            ))}
+              {usersToDisplay.map((user, index) => (
+                <Card
+                  user={user}
+                  key={user.name}
+                  setUserToDisplay={setUserToDisplay}
+                  setIsMaps={setIsMaps}
+                  index={index}
+                  userToDisplay={userToDisplay}
+                  setChecked={setChecked}
+                />
+              ))}
           </motion.div>
           )}
           {!isShowMenu && (
