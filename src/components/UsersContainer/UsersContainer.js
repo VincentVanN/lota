@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/require-default-props */
 /* eslint-disable max-len */
@@ -8,6 +9,26 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Card from '../Card/Card';
 import AddUserContainer from '../AddUserContainer/AddUserContainer';
 
+function Checkbox({ obj, onChange, state }) {
+  const handleChange = () => {
+    const stateArray = state.filter((item) => item !== obj);
+    const newObject = { ...obj, checked: !obj.checked };
+    stateArray.push(newObject);
+    onChange(stateArray);
+  };
+  return (
+    <>
+      <input
+        type="checkbox"
+        id={`custom-checkbox-${obj.index}`}
+        name={obj.city}
+        value={obj.checked}
+        onChange={handleChange}
+      />
+      {obj.city}
+    </>
+  );
+}
 function UsersContainer({
   users, setUserToDisplay, setIsMaps, userToDisplay, setshowModal, setRefreshDb, isloading, appRef,
 }) {
@@ -17,7 +38,7 @@ function UsersContainer({
   const [isSearchBar, setIsSearchBar] = useState(false);
   const [usersCity, setusersCity] = useState([]);
   const [refreshCity, setrefreshCity] = useState(true);
-  const [selectedCity, setselectedCity] = useState('');
+  const [selectedCities, setselectedCities] = useState([]);
   const [checked, setChecked] = useState(false);
   const [citiesWindow, setCitiesWindow] = useState(false);
   const handleChange = (e) => setinputText(e.target.value);
@@ -26,8 +47,7 @@ function UsersContainer({
     setRefreshDb(true);
     setrefreshCity(true);
   };
-  const handleSelectedCity = (city) => {
-    setselectedCity(city);
+  const handleSelectedCities = () => {
     setIsSearchBar(false);
     setCitiesWindow(false);
   };
@@ -37,14 +57,27 @@ function UsersContainer({
       setCitiesWindow(true);
     }
   };
-  const usersToDisplay = users.filter((user) => user.address.city.includes(selectedCity)
-  && (user.email.toLowerCase().includes(inputText.toLowerCase()) || user.name.toLowerCase().includes(inputText.toLowerCase())));
+  console.log(selectedCities);
+  const filteredUsers = users.filter((user) => user.email.toLowerCase().includes(inputText.toLowerCase()) || user.name.toLowerCase().includes(inputText.toLowerCase()));
+  let usersToDisplay = [];
+  if (selectedCities.length !== 0) {
+    usersToDisplay = filteredUsers.filter((user) => selectedCities.some((item) => user.address.city === item.city));
+  }
+  else usersToDisplay = filteredUsers;
+
   //
   //
   useEffect(() => {
+    usersCity.forEach((item) => {
+      if (item.checked) {
+        setselectedCities([...selectedCities, item]);
+      }
+    });
+  }, [usersCity]);
+  useEffect(() => {
     const getCity = () => {
       users.forEach((user) => {
-        setusersCity((current) => [...current, user.address.city]);
+        setusersCity((current) => [...current, { city: user.address.city, checked: false }]);
       });
     };
     if (refreshCity && !isloading) {
@@ -64,7 +97,7 @@ function UsersContainer({
   //
   useEffect(() => {
     if (!checked) {
-      setselectedCity('');
+      setselectedCities([]);
     }
   }, [checked]);
   //
@@ -134,14 +167,24 @@ function UsersContainer({
           },
         }}
       >
-        {usersCity.map((city, index) => (
-          <li
-            key={`${city} ${index}`}
-            onClick={() => handleSelectedCity(city)}
-          >
-            {city}
+        {usersCity.sort((a, b) => a.city.localeCompare(b.city)).map((city, index) => (
+          <li key={index}>
+            <Checkbox
+              obj={city}
+              onChange={setusersCity}
+              state={usersCity}
+            />
           </li>
         ))}
+        <div className="checkboxButtonContainer">
+          <motion.button
+            type="button"
+            className="ckeckboxCityButton"
+            whileTap={{ scale: 0.7 }}
+            onClick={handleSelectedCities}
+          >Valider
+          </motion.button>
+        </div>
       </motion.ul>
       <div className="animationContainer">
         <AnimatePresence mode="wait">

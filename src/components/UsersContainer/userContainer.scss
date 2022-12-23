@@ -114,3 +114,16 @@ input[type=checkbox] {
     }
   }
 }
+.checkboxButtonContainer{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.ckeckboxCityButton {
+  margin: auto;
+  border: none;
+  background: #34495e;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+}
