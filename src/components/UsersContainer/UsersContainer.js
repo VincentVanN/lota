@@ -38,16 +38,19 @@ function UsersContainer({
   const [isSearchBar, setIsSearchBar] = useState(false);
   const [usersCity, setusersCity] = useState([]);
   const [refreshCity, setrefreshCity] = useState(true);
-  const [selectedCities, setselectedCities] = useState([]);
+  const [isFilteredByCities, setIsFilteredByCities] = useState(false);
   const [checked, setChecked] = useState(false);
   const [citiesWindow, setCitiesWindow] = useState(false);
+  //
   const handleChange = (e) => setinputText(e.target.value);
+  //
   const handleClick = () => {
     setisShowMenu(true);
     setRefreshDb(true);
     setrefreshCity(true);
   };
   const handleSelectedCities = () => {
+    setIsFilteredByCities(true);
     setIsSearchBar(false);
     setCitiesWindow(false);
   };
@@ -57,23 +60,15 @@ function UsersContainer({
       setCitiesWindow(true);
     }
   };
-  console.log(selectedCities);
   const filteredUsers = users.filter((user) => user.email.toLowerCase().includes(inputText.toLowerCase()) || user.name.toLowerCase().includes(inputText.toLowerCase()));
   let usersToDisplay = [];
-  if (selectedCities.length !== 0) {
-    usersToDisplay = filteredUsers.filter((user) => selectedCities.some((item) => user.address.city === item.city));
+  if (isFilteredByCities) {
+    usersToDisplay = filteredUsers.filter((user) => usersCity.some((item) => user.address.city === item.city && item.checked !== false));
   }
   else usersToDisplay = filteredUsers;
+  //
+  //
 
-  //
-  //
-  useEffect(() => {
-    usersCity.forEach((item) => {
-      if (item.checked) {
-        setselectedCities([...selectedCities, item]);
-      }
-    });
-  }, [usersCity]);
   useEffect(() => {
     const getCity = () => {
       users.forEach((user) => {
@@ -89,17 +84,12 @@ function UsersContainer({
   //
   //
   useEffect(() => {
-    if (isSearchBar) {
-      inputRef.current.focus();
+    if (isSearchBar && checked) {
+      setCitiesWindow(true);
     }
-  }, [isSearchBar]);
+  }, [isSearchBar, checked]);
   //
   //
-  useEffect(() => {
-    if (!checked) {
-      setselectedCities([]);
-    }
-  }, [checked]);
   //
   //
   return (

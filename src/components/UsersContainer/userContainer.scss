@@ -105,6 +105,7 @@ input[type=checkbox] {
   border: 1px solid white;
   z-index: 500;
   border-radius: 10px;
+  z-index: 1000;
   & li {
     margin-bottom: 10px;
     &:hover {
