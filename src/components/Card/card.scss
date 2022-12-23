@@ -1,6 +1,6 @@
 .cardContainer {
   position: relative;
-  width: 100%;
+  width: 90%;
   display: flex;
   align-items: center;
   padding: 10px 0;
@@ -35,6 +35,9 @@
     overflow: hidden;
     border-radius: 20px;
   }
+  &-sub {
+    margin-top: 10px;
+  }
   &-name {
     font-size: max(0.8vw, 16px);
     font-weight: 500;
@@ -44,7 +47,6 @@
     top: 50%;
     right: 0;
     transform: translate(0, -50%);
-    transition: 0.5s;
     &:hover {
       color: #2196f3;
       scale: 1.02;
@@ -64,7 +66,6 @@
     margin-bottom: 5px;
     display: flex;
     align-items: center;
-    transition: 0.5s;
     &:hover {
       color: #2196f3;
       scale: 1.02;

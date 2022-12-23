@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/require-default-props */
 /* eslint-disable max-len */
 import './userContainer.scss';
@@ -8,27 +9,71 @@ import Card from '../Card/Card';
 import AddUserContainer from '../AddUserContainer/AddUserContainer';
 
 function UsersContainer({
-  users, setUserToDisplay, setIsMaps, userToDisplay, setshowModal, setRefreshDb,
+  users, setUserToDisplay, setIsMaps, userToDisplay, setshowModal, setRefreshDb, isloading, appRef,
 }) {
   const inputRef = useRef();
   const [inputText, setinputText] = useState('');
   const [isShowMenu, setisShowMenu] = useState(true);
   const [isSearchBar, setIsSearchBar] = useState(false);
+  const [usersCity, setusersCity] = useState([]);
+  const [refreshCity, setrefreshCity] = useState(true);
+  const [selectedCity, setselectedCity] = useState('');
+  const [checked, setChecked] = useState(false);
+  const [citiesWindow, setCitiesWindow] = useState(false);
   const handleChange = (e) => setinputText(e.target.value);
   const handleClick = () => {
     setisShowMenu(true);
     setRefreshDb(true);
+    setrefreshCity(true);
   };
-  const usersToDisplay = users.filter((user) => user.name.toLowerCase().includes(inputText.toLowerCase()));
-  const CardHidden = userToDisplay ? 'retract' : '';
+  const handleSelectedCity = (city) => {
+    setselectedCity(city);
+    setIsSearchBar(false);
+    setCitiesWindow(false);
+  };
+  const handleCheckbox = () => {
+    setChecked(!checked);
+    if (!checked) {
+      setCitiesWindow(true);
+    }
+  };
+  const usersToDisplay = users.filter((user) => user.address.city.includes(selectedCity)
+  && (user.email.toLowerCase().includes(inputText.toLowerCase()) || user.name.toLowerCase().includes(inputText.toLowerCase())));
+  //
+  //
+  useEffect(() => {
+    const getCity = () => {
+      users.forEach((user) => {
+        setusersCity((current) => [...current, user.address.city]);
+      });
+    };
+    if (refreshCity && !isloading) {
+      setrefreshCity(false);
+      setusersCity([]);
+      getCity();
+    }
+  }, [refreshCity]);
+  //
+  //
   useEffect(() => {
     if (isSearchBar) {
       inputRef.current.focus();
     }
   }, [isSearchBar]);
+  //
+  //
+  useEffect(() => {
+    if (!checked) {
+      setselectedCity('');
+    }
+  }, [checked]);
+  //
+  //
   return (
-    <div
-      className={`usersListContainer ${CardHidden}`}
+    <motion.div
+      className="usersListContainer"
+      drag
+      dragConstraints={appRef}
     >
       <div className="header">
         <h3>{!userToDisplay ? 'Gestion utilisateurs' : userToDisplay.name}</h3>
@@ -53,23 +98,51 @@ function UsersContainer({
             name="search-outline"
             onClick={() => setIsSearchBar(!isSearchBar)}
           />
-          <motion.input
-            ref={inputRef}
-            className="hidden"
+          <motion.div
+            className="inputFields"
             animate={{
               width: isSearchBar ? '100%' : 0,
               visibility: isSearchBar ? 'visible' : 'hidden',
-              background: 'rgba(255, 255, 255, 0.2)',
               transition: {
                 duration: 0.3,
               },
             }}
-            type="text"
-            onChange={handleChange}
-            onBlur={() => setIsSearchBar(!isSearchBar)}
-          />
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              onChange={handleChange}
+              onBlur={() => setIsSearchBar(!isSearchBar)}
+            />
+            {isSearchBar && (
+            <label htmlFor="checkbox">
+              <input id="checkbox" type="checkbox" checked={checked} onChange={handleCheckbox} />
+              Filtrer par ville
+            </label>
+            )}
+          </motion.div>
         </div>
       </div>
+      <motion.ul
+        className="cityContainer"
+        animate={{
+          scale: citiesWindow ? 1 : 0,
+          translateX: '-50%',
+          translateY: '-50%',
+          transition: {
+            duration: 0.3,
+          },
+        }}
+      >
+        {usersCity.map((city, index) => (
+          <li
+            key={`${city} ${index}`}
+            onClick={() => handleSelectedCity(city)}
+          >
+            {city}
+          </li>
+        ))}
+      </motion.ul>
       <div className="animationContainer">
         <AnimatePresence mode="wait">
           {isShowMenu && (
@@ -107,7 +180,7 @@ function UsersContainer({
         </AnimatePresence>
       </div>
 
-    </div>
+    </motion.div>
 
   );
 }
@@ -118,6 +191,8 @@ UsersContainer.propTypes = {
   userToDisplay: PropTypes.object,
   setshowModal: PropTypes.func.isRequired,
   setRefreshDb: PropTypes.func.isRequired,
+  isloading: PropTypes.bool.isRequired,
+  appRef: PropTypes.node.isRequired,
 };
 
 export default UsersContainer;

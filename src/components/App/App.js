@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import './app.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   collection,
   getDocs,
@@ -13,6 +13,7 @@ import ModalForm from '../ModalForm/ModalForm';
 import Opener from '../Opener/Opener';
 
 function App() {
+  const appRef = useRef();
   const userCollectionRef = collection(db, 'users');
   const [users, setUsers] = useState(null);
   const [isloading, setIsLoading] = useState(true);
@@ -43,6 +44,7 @@ function App() {
           company: { name: currentUser.company },
         };
         setUsers((current) => [...current, user]);
+        setIsLoading(false);
       });
     };
     if (!users || refreshDb) {
@@ -51,7 +53,6 @@ function App() {
         .then((response) => response.json())
         .then((data) => {
           setUsers(data);
-          setIsLoading(false);
           getUsers();
           setRefreshDb(false);
         })
@@ -61,8 +62,8 @@ function App() {
     }
   }, [users, refreshDb]);
   return (
-    <div className="app">
-      <AnimatePresence mode="wait">
+    <div className="app" ref={appRef}>
+      <AnimatePresence>
         {isOpener && (
         <motion.div
           className="openerContainer"
@@ -76,14 +77,10 @@ function App() {
           <Opener />
         </motion.div>
         )}
-        {!isOpener && (
         <div className="generalContainer">
           <img className="logo" src="lota_logo.png" alt="lota" />
           <ModalForm showModal={showModal} setshowModal={setshowModal} />
-          <div
-            className="contentContainer"
-          >
-            {!isloading && (
+          {!isloading && (
             <UsersContainer
               users={users}
               userToDisplay={userToDisplay}
@@ -93,12 +90,14 @@ function App() {
               showModal={showModal}
               setshowModal={setshowModal}
               setRefreshDb={setRefreshDb}
+              isloading={isloading}
+              appRef={appRef}
 
             />
-            )}
-          </div>
+          )}
+
           {isMaps && (
-          <MapsContainer coords={{ lat: parseFloat(userToDisplay.address.geo.lat), lng: parseFloat(userToDisplay.address.geo.lng) }} />
+          <MapsContainer coords={{ lat: parseFloat(userToDisplay.address.geo.lat), lng: parseFloat(userToDisplay.address.geo.lng) }} appRef={appRef} />
           )}
           <div
             className="easterEgg"
@@ -108,7 +107,6 @@ function App() {
           >{process.env.REACT_APP_EASTER_EGG}
           </div>
         </div>
-        )}
       </AnimatePresence>
 
     </div>

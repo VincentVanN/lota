@@ -6,7 +6,7 @@ import Maps from './Maps';
 import IconContainer from '../IconContainer/IconContainer';
 import ChartContainer from '../ChartContainer/ChartContainer';
 
-function MapsContainer({ coords }) {
+function MapsContainer({ coords, appRef }) {
   const render = (statusMap) => {
     if (statusMap === Status.FAILURE) return <div>erreur!</div>;
     return <div>loading...</div>;
@@ -20,6 +20,8 @@ function MapsContainer({ coords }) {
         animate={{ y: 0 }}
         exit={{ y: 1000 }}
         key="mapsContainer"
+        drag
+        dragConstraints={appRef}
       >
         <IconContainer isChart={isChart} setisChart={setisChart} />
         {!isChart && (
@@ -54,5 +56,6 @@ function MapsContainer({ coords }) {
 }
 MapsContainer.propTypes = {
   coords: PropTypes.object.isRequired,
+  appRef: PropTypes.node.isRequired,
 };
 export default MapsContainer;

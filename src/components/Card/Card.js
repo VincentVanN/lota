@@ -14,6 +14,9 @@ function Card({
     setUserToDisplay(null);
     setIsMaps(false);
   };
+  const onEmailClick = () => {
+    window.open(`mailto:${user.email}`);
+  };
   const CardHidden = (userToDisplay && userToDisplay !== user) ? 'hidden' : '';
   return (
     <div
@@ -43,9 +46,12 @@ function Card({
               <p>{user.company.name}</p>
             </div>
           )}
-          <div className="card-link">
-            <ion-icon name="unlink-outline" />
-            <a href={`http://${user.website}`} target="_blank" rel="noopener noreferrer">{user.website}</a>
+          <div
+            className="card-link email"
+            onClick={onEmailClick}
+          >
+            <ion-icon name="mail-outline" />
+            {user.email}
           </div>
           {userToDisplay && (
             <MetaContainer user={userToDisplay} />

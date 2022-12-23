@@ -3,9 +3,6 @@ import './metaContainer.scss';
 import PropTypes from 'prop-types';
 
 function MetaContainer({ user }) {
-  const onEmailClick = () => {
-    window.open(`mailto:${user.email}`);
-  };
   return (
     <div
       className="metaContainer"
@@ -19,7 +16,7 @@ function MetaContainer({ user }) {
         </div>
         <div
           className="zip"
-        >{`${user.address.zipcode || ''}, ${user.address.city}`}
+        >{`${user.address.zipcode || ''}, ${user.address.city.split(',')[0]}`}
         </div>
       </div>
       <div
@@ -28,12 +25,9 @@ function MetaContainer({ user }) {
         <ion-icon name="call-outline" />
         {user.phone}
       </div>
-      <div
-        className="lineWithIcon email"
-        onClick={onEmailClick}
-      >
-        <ion-icon name="mail-outline" />
-        {user.email}
+      <div className="card-link">
+        <ion-icon name="unlink-outline" />
+        <a href={`http://${user.website}`} target="_blank" rel="noopener noreferrer">{user.website}</a>
       </div>
     </div>
   );
